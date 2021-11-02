@@ -28,8 +28,8 @@ namespace Circulo_de_seguridad.Controllers
             this.configuration = configuration;
             this.context = context;
         }
-        [HttpPost("susbribirse")]
-        public async Task<ActionResult> susbribirse(SubcripcionGrupo subcripcion)
+        [HttpPost("subscribirse")]
+        public async Task<ActionResult> subscribirse(IdentificadorDto subcripcion)
         {
 
             try
@@ -49,6 +49,37 @@ namespace Circulo_de_seguridad.Controllers
                     return BadRequest("La subcripcion ya fue anteriormente realizada, debe esperar a ser aceptado");
                 }
                 context.Add(usuGru);
+                await context.SaveChangesAsync();
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("editarsubscripcion")]
+        public async Task<ActionResult> editarSubscripcion(EditarSubscripcion editarSubscripcion)
+        {
+
+            try
+            {
+                var usuSub = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == editarSubscripcion.Email);
+                if (usuSub == null)
+                {
+                    return BadRequest("El Email no corresponde a ningun usuario");
+                }
+                var email = HttpContext.User.FindFirst("email").Value;
+                var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
+                var grupo = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == editarSubscripcion.Identificador && x.AdminId==usu.Id);
+                if(grupo == null)
+                {
+                    return BadRequest("Usted no es administrador");
+                }
+
+                var subscripcion = await context.UsuariosGrupos.SingleOrDefaultAsync(x => x.UsuarioId == usu.Id && x.GrupoId == grupo.Id);
+                subscripcion.Estado = editarSubscripcion.Estado;
+                context.Update(subscripcion);
                 await context.SaveChangesAsync();
                 return NoContent();
 

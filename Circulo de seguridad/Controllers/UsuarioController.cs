@@ -51,7 +51,7 @@ namespace Circulo_de_seguridad.Controllers
                         numBytesRequested: 256 / 8));
                 usuario.Clave = hashed;
                 await context.AddAsync(usuario);
-                return  ConstruirToken(usuario.Email, usuario.Id);
+                return  ConstruirToken(usuario.Email);
             }
             catch(Exception ex)
             {
@@ -77,7 +77,7 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Contraseña o Email Incorrectos");
                 }
-                return  ConstruirToken(usuario.Email, usuario.Id);
+                return  ConstruirToken(usuario.Email);
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace Circulo_de_seguridad.Controllers
             }
         }
          
-            private  TokenDto ConstruirToken(string email , int usuarioId)
+            private  TokenDto ConstruirToken(string email )
             {
                 var claim = new List<Claim>()
             {

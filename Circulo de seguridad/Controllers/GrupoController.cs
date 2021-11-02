@@ -40,8 +40,7 @@ namespace Circulo_de_seguridad.Controllers
                 var grupo = mapper.Map<Grupo>(crear);
                
                 grupo.FechaCreacion = DateTime.Now;
-                grupo.AdminId = usu.Id;
-                context.Add(grupo);
+                grupo.AdminId = usu.Id;           
                 string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                         password: grupo.AdminId+grupo.Id+"",
                         salt: System.Text.Encoding.ASCII.GetBytes("SALYAZUCAR21"),
@@ -49,6 +48,7 @@ namespace Circulo_de_seguridad.Controllers
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
                 grupo.Identificador = hashed;
+                context.Add(grupo);
                 await context.SaveChangesAsync();
                 return NoContent();
                

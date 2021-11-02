@@ -12,6 +12,7 @@ namespace Circulo_de_seguridad.Utilidades
     {
         public AutoMapperProfiles()
         {
+            CreateMap<Localizacion, CrearLocalizacion>();
             CreateMap<Usuario, RegistrarUsuario>();
             CreateMap<Grupo, CrearGrupo>();
         }
