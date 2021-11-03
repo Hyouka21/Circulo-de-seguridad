@@ -33,7 +33,7 @@ namespace Circulo_de_seguridad.Controllers
         {
             try
             {
-                var email = HttpContext.User.FindFirst("email").Value;
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 var gru = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == identificadorDto.Identificador);
                 if (gru == null)
@@ -62,7 +62,7 @@ namespace Circulo_de_seguridad.Controllers
         {
             try
             {
-                var email = HttpContext.User.FindFirst("email").Value;
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 return await context.Notificaciones.Where(x => x.UsuarioId == usu.Id).ToListAsync();
                 

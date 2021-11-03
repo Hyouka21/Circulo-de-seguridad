@@ -51,7 +51,7 @@ namespace Circulo_de_seguridad.Controllers
                         numBytesRequested: 256 / 8));
                 usuario.Clave = hashed;
                 await context.AddAsync(usuario);
-                return  ConstruirToken(usuario.Email);
+                return  ConstruirToken(usuario);
             }
             catch(Exception ex)
             {
@@ -77,7 +77,8 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Contraseña o Email Incorrectos");
                 }
-                return  ConstruirToken(usuario.Email);
+                var token = ConstruirToken(usuario);
+                return token;
             }
             catch (Exception ex)
             {
@@ -85,15 +86,15 @@ namespace Circulo_de_seguridad.Controllers
             }
         }
          
-            private  TokenDto ConstruirToken(string email )
+            private  TokenDto ConstruirToken( Usuario usu )
             {
                 var claim = new List<Claim>()
             {
-                new Claim("email",email),
+                new Claim("email",usu.Email),
      
             };
                 
-                var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["llavejwt"]));
+                var llave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:ClaveSecreta"]));
                 var creds = new SigningCredentials(llave, SecurityAlgorithms.HmacSha256);
                 var expiracion = DateTime.UtcNow.AddYears(1);
                 var securityToken = new JwtSecurityToken(issuer: null, audience: null, claims: claim, expires: expiracion, signingCredentials: creds);

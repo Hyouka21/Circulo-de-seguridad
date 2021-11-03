@@ -34,7 +34,7 @@ namespace Circulo_de_seguridad.Controllers
 
             try
             {
-                var email = HttpContext.User.FindFirst("email").Value;
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var grupo =await  context.Grupos.SingleOrDefaultAsync(x=>x.Identificador == subcripcion.Identificador);
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email==email);
                 var usuGru = new UsuarioGrupo
@@ -69,7 +69,7 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("El Email no corresponde a ningun usuario");
                 }
-                var email = HttpContext.User.FindFirst("email").Value;
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 var grupo = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == editarSubscripcion.Identificador && x.AdminId==usu.Id);
                 if(grupo == null)

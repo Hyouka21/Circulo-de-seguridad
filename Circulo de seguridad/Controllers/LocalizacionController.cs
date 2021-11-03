@@ -9,13 +9,14 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Circulo_de_seguridad.Controllers
 {
     [ApiController]
-    [Route("grupo")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Route("localizacion")]
+   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class LocalizacionController : ControllerBase
     {
 
@@ -34,7 +35,7 @@ namespace Circulo_de_seguridad.Controllers
         {
             try
             {
-                var email = HttpContext.User.FindFirst("email").Value;
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 var local = mapper.Map<Localizacion>(crearLocalizacion);
                 local.UsuarioId = usu.Id;
@@ -47,12 +48,14 @@ namespace Circulo_de_seguridad.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("obtenerLocalizacion")]
         public async Task<ActionResult<List<LocalizacionUsuario>>> obtenerLocalizacion(IdentificadorDto identificadorDto)
         {
             try
             {
-                var email = HttpContext.User.FindFirst("email").Value;
+                
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type== ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 var grupo = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == identificadorDto.Identificador);
                 if (grupo == null)
@@ -65,24 +68,20 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Usted no pertenece a ese grupo");
                 }
-                var usuariosGrupo = await context.Usuarios.Join(
-                    context.UsuariosGrupos.Where(x => x.GrupoId==grupo.Id && x.Estado==true),
-                    usu => usu.Id,
-                    usuGru => usuGru.UsuarioId,
-                    (usu, usuGru) => usu)
-                    .ToListAsync();
-                List<LocalizacionUsuario> lista =  new List<LocalizacionUsuario>();
-                foreach( var usuario in usuariosGrupo)
+                var localizaciones=    await context.Localizaciones.FromSqlInterpolated($"EXECUTE obtenerLocalizacionGrupoMayor  @idGrupo = {grupo.Id} ").ToListAsync();
+               
+                List<LocalizacionUsuario> lista = new List<LocalizacionUsuario>();
+                foreach( var localiza in localizaciones)
                 {
-                    var localizacion = await context.Localizaciones
-                            .FirstOrDefaultAsync(x => x.UsuarioId == usuario.Id && x.Fecha > DateTime.Now.AddMinutes(-2));
+                    var usur = await context.Usuarios.SingleOrDefaultAsync(x => x.Id == localiza.UsuarioId);
                     lista.Add(new LocalizacionUsuario
                     {
-                        CoordenadaX= localizacion.CoordenadaX,
-                        CoordenadaY=localizacion.CoordenadaY,
-                        NickName=usuario.NickName,
-                        Email = usuario.Email,
-                        UrlAvatar = usuario.Avatar
+                        CoordenadaX= localiza.CoordenadaX,
+                        CoordenadaY= localiza.CoordenadaY,
+                        NickName= usur.NickName,
+                        Email = usur.Email,
+                        UrlAvatar = usur.Avatar,
+                        Fecha = localiza.Fecha
                     });
                 }
                 return Ok(lista);

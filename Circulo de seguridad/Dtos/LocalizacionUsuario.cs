@@ -12,6 +12,7 @@ namespace Circulo_de_seguridad.Dtos
         public string NickName { get; set; }
         public string Email { get; set; }
         public string UrlAvatar { get; set; }
+        public DateTime Fecha { get; set; }
 
     }
 }

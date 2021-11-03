@@ -35,7 +35,7 @@ namespace Circulo_de_seguridad.Controllers
         {
             try
             {
-                var email = HttpContext.User.FindFirst("email").Value;
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 var grupo = mapper.Map<Grupo>(crear);
                
