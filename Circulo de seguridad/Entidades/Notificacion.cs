@@ -13,6 +13,7 @@ namespace Circulo_de_seguridad.Entidades
         public DateTime FechaCreacion { get; set; }
         public int GrupoId { get; set; }
         public int UsuarioId { get; set; }
+        public bool Estado { get; set; }
         public Grupo Grupo { get; set; }
         public Usuario Usuario { get; set; }
     }

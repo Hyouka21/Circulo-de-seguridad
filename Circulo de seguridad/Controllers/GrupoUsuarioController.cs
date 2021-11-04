@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Circulo_de_seguridad.Controllers
@@ -37,16 +38,21 @@ namespace Circulo_de_seguridad.Controllers
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var grupo =await  context.Grupos.SingleOrDefaultAsync(x=>x.Identificador == subcripcion.Identificador);
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email==email);
+                if (grupo == null)
+                {
+                    return BadRequest("El grupo no existe");
+                }
                 var usuGru = new UsuarioGrupo
                 {
                     UsuarioId = usu.Id,
                     GrupoId = grupo.Id,
-                    Estado = false
+                    Estado = false,
+                    Fecha=DateTime.Now
                 };
-                var respuesta = await context.UsuariosGrupos.AnyAsync(x => x.GrupoId == usuGru.GrupoId && x.UsuarioId == usuGru.UsuarioId);
+                var respuesta = await context.UsuariosGrupos.AnyAsync(x => x.GrupoId == usuGru.GrupoId && x.UsuarioId == usuGru.UsuarioId );
                 if (respuesta)
                 {
-                    return BadRequest("La subcripcion ya fue anteriormente realizada, debe esperar a ser aceptado");
+                    return BadRequest("La subcripcion ya se realizo anteriormente");
                 }
                 context.Add(usuGru);
                 await context.SaveChangesAsync();
@@ -77,8 +83,8 @@ namespace Circulo_de_seguridad.Controllers
                     return BadRequest("Usted no es administrador");
                 }
 
-                var subscripcion = await context.UsuariosGrupos.SingleOrDefaultAsync(x => x.UsuarioId == usu.Id && x.GrupoId == grupo.Id);
-                subscripcion.Estado = editarSubscripcion.Estado;
+                var subscripcion = await context.UsuariosGrupos.SingleOrDefaultAsync(x => x.UsuarioId == usuSub.Id && x.GrupoId == grupo.Id);
+                subscripcion.Estado = editarSubscripcion.Estado=="1"?true:false;
                 context.Update(subscripcion);
                 await context.SaveChangesAsync();
                 return NoContent();

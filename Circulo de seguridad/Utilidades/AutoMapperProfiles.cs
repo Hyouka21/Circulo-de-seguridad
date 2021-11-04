@@ -12,9 +12,9 @@ namespace Circulo_de_seguridad.Utilidades
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Localizacion, CrearLocalizacion>();
-            CreateMap<Usuario, RegistrarUsuario>();
-            CreateMap<Grupo, CrearGrupo>();
+            CreateMap<Localizacion, CrearLocalizacion>().ReverseMap();
+            CreateMap<Usuario, RegistrarUsuario>().ReverseMap();
+            CreateMap<Grupo, CrearGrupo>().ReverseMap();
         }
         
         

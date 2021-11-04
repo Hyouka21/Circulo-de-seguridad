@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Circulo_de_seguridad.Controllers
@@ -46,7 +47,8 @@ namespace Circulo_de_seguridad.Controllers
                     GrupoId = gru.Id,
                     Titulo = "Emergencia",
                     Mensaje = "Algo le ocurrio a " + usu.NickName + " chekea su ubicacion",
-                    FechaCreacion = DateTime.Now
+                    FechaCreacion = DateTime.Now,
+                    Estado = false
                 };
                 await context.AddAsync(notificacion);
                 await context.SaveChangesAsync();
@@ -58,14 +60,21 @@ namespace Circulo_de_seguridad.Controllers
 
         }
         [HttpGet("obtener")]
-        public async Task<ActionResult<List<Notificacion>>> obtener()//no devolver la notificacion
+        public async Task<ActionResult<Notificacion>> obtener()//pedir grupo buscar por grupo y no devolver notificacion
         {
             try
             {
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
-                return await context.Notificaciones.Where(x => x.UsuarioId == usu.Id).ToListAsync();
-                
+                var notificacion = await context.Notificaciones.SingleOrDefaultAsync(x => x.UsuarioId == usu.Id && x.Estado == false);
+                if (notificacion == null)
+                {
+                    return NoContent();
+                }
+                notificacion.Estado = true;
+                context.Update(notificacion);
+                await context.SaveChangesAsync();
+                return notificacion;
             }
             catch (Exception ex)
             {

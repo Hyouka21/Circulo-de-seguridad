@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration;
 using Circulo_de_seguridad.Dtos;
 using Circulo_de_seguridad.Entidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +48,17 @@ namespace Circulo_de_seguridad.Controllers
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
                 grupo.Identificador = hashed;
-                context.Add(grupo);
+                 context.Add(grupo);
+                await context.SaveChangesAsync();
+                var grupoA = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == grupo.Identificador);
+                var grupoUsu = new UsuarioGrupo
+                {
+                    GrupoId = grupoA.Id,
+                    UsuarioId = usu.Id,
+                    Estado = true,
+                    Fecha = DateTime.Now
+                };
+                 context.Add(grupoUsu);
                 await context.SaveChangesAsync();
                 return NoContent();
                

@@ -13,6 +13,6 @@ namespace Circulo_de_seguridad.Dtos
         [Required]
         public string Identificador { get; set; }
         [Required]
-        public bool Estado { get; set; }
+        public string Estado { get; set; }
     }
 }

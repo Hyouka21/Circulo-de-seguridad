@@ -38,9 +38,9 @@ namespace Circulo_de_seguridad.Controllers
             try
             {
                 var resultado = await context.Usuarios.AnyAsync(x => x.Email == registrarUsuario.Email);
-                if (!resultado)
+                if (resultado)
                 {
-                    return BadRequest("Ya hay un usuario registrado con ese nombre");
+                    return BadRequest("Ya hay un usuario registrado con ese email");
                 }
                 var usuario = mapper.Map<Usuario>(registrarUsuario);
                 string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -50,8 +50,9 @@ namespace Circulo_de_seguridad.Controllers
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
                 usuario.Clave = hashed;
-                await context.AddAsync(usuario);
-                return  ConstruirToken(usuario);
+                 context.Add(usuario);
+                await context.SaveChangesAsync();
+                return NoContent();
             }
             catch(Exception ex)
             {

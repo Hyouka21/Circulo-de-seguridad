@@ -16,6 +16,6 @@ namespace Circulo_de_seguridad.Dtos
         [Required]
         public string Clave { get; set; }
         public string Avatar { get; set; }
-        public DateTime FechaNacimiento { get; set; }
+        public string FechaNacimiento { get; set; }
     }
 }

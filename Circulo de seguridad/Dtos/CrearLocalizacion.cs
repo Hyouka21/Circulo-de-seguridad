@@ -9,8 +9,8 @@ namespace Circulo_de_seguridad.Dtos
     public class CrearLocalizacion
     {
         [Required]
-        public int CoordenadaX { get; set; }
+        public float CoordenadaX { get; set; }
         [Required]
-        public int CoordenadaY { get; set; }
+        public float CoordenadaY { get; set; }
     }
 }
