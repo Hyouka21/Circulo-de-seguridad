@@ -4,14 +4,16 @@ using Circulo_de_seguridad;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Circulo_de_seguridad.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211106151343_localizacionesporU")]
+    partial class localizacionesporU
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,23 +70,15 @@ namespace Circulo_de_seguridad.Migrations
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("FechaFinalizacion")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("GrupoId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GrupoId");
-
-                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Eventos");
                 });
@@ -249,15 +243,7 @@ namespace Circulo_de_seguridad.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Circulo_de_seguridad.Entidades.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Grupo");
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Circulo_de_seguridad.Entidades.Grupo", b =>
@@ -304,13 +290,13 @@ namespace Circulo_de_seguridad.Migrations
             modelBuilder.Entity("Circulo_de_seguridad.Entidades.UsuarioGrupo", b =>
                 {
                     b.HasOne("Circulo_de_seguridad.Entidades.Grupo", "Grupo")
-                        .WithMany()
+                        .WithMany("UsuariosGrupos")
                         .HasForeignKey("GrupoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Circulo_de_seguridad.Entidades.Usuario", "Usuario")
-                        .WithMany()
+                        .WithMany("UsuariosGrupos")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -318,6 +304,16 @@ namespace Circulo_de_seguridad.Migrations
                     b.Navigation("Grupo");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Circulo_de_seguridad.Entidades.Grupo", b =>
+                {
+                    b.Navigation("UsuariosGrupos");
+                });
+
+            modelBuilder.Entity("Circulo_de_seguridad.Entidades.Usuario", b =>
+                {
+                    b.Navigation("UsuariosGrupos");
                 });
 #pragma warning restore 612, 618
         }

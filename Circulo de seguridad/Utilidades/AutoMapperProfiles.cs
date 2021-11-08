@@ -15,6 +15,12 @@ namespace Circulo_de_seguridad.Utilidades
             CreateMap<Localizacion, CrearLocalizacion>().ReverseMap();
             CreateMap<Usuario, RegistrarUsuario>().ReverseMap();
             CreateMap<Grupo, CrearGrupo>().ReverseMap();
+            CreateMap<NotificacionDto,Notificacion>().ReverseMap()
+                .ForMember(d=>d.NombreGrupo,o=>o.MapFrom(s=>s.Grupo.Nombre))
+                .ForMember(d => d.NombreUsuario, o => o.MapFrom(s => s.Usuario.NickName));
+            CreateMap<CrearGrupo, Grupo>().ReverseMap();
+            CreateMap<CrearEvento, Evento>();
+            CreateMap<Evento, EventosDto>();
         }
         
         

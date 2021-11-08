@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace Circulo_de_seguridad.Dtos
 {
-    public class ObtenerLocalizacion
+    public class EliminarEvento
     {
         public string Identificador { get; set; }
+        public string Fecha { get; set; }
     }
 }

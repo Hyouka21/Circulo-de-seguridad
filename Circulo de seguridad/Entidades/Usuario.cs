@@ -16,6 +16,7 @@ namespace Circulo_de_seguridad.Entidades
         public string Clave { get; set; }
         public string Avatar { get; set; }
         public DateTime FechaNacimiento { get; set; }
+        [NotMapped]
         public List<UsuarioGrupo> UsuariosGrupos { get; set; }
     }
 }

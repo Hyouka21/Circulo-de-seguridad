@@ -16,6 +16,7 @@ namespace Circulo_de_seguridad.Entidades
         public string Descripcion { get; set; }
         public string AvatarGrupo { get; set; }
         public DateTime FechaCreacion { get; set; }
+        [NotMapped]
         public List<UsuarioGrupo> UsuariosGrupos { get; set; }
         public int AdminId { get; set; }
         public Usuario Admin { get; set; }

@@ -50,7 +50,8 @@ namespace Circulo_de_seguridad.Controllers
         }
 
         [HttpGet("obtenerLocalizacion")]
-        public async Task<ActionResult<List<LocalizacionUsuario>>> obtenerLocalizacion(IdentificadorDto identificadorDto)
+
+          public async Task<ActionResult<List<LocalizacionUsuario>>> obtenerLocalizacion(IdentificadorDto identificadorDto)
         {
             try
             {
@@ -68,24 +69,25 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Usted no pertenece a ese grupo");
                 }
-                var localizaciones=    await context.Localizaciones.FromSqlInterpolated($"EXECUTE obtenerLocalizacionGrupoMayor  @idGrupo = {grupo.Id} ").ToListAsync();
-               
-                List<LocalizacionUsuario> lista = new List<LocalizacionUsuario>();
-                foreach( var localiza in localizaciones)
-                {
-                    var usur = await context.Usuarios.SingleOrDefaultAsync(x => x.Id == localiza.UsuarioId);
-                    lista.Add(new LocalizacionUsuario
-                    {
-                        CoordenadaX= localiza.CoordenadaX,
-                        CoordenadaY= localiza.CoordenadaY,
-                        NickName= usur.NickName,
-                        Email = usur.Email,
-                        UrlAvatar = usur.Avatar,
-                        Fecha = localiza.Fecha
-                    });
-                }
-                return Ok(lista);
+                var localizaciones =  await context.localizacionUsuarios.FromSqlInterpolated($"EXECUTE obtenerLocalizacion  @idGrupo = {grupo.Id} ").ToListAsync();
 
+                /* List<LocalizacionUsuario> lista = new List<LocalizacionUsuario>();
+                 foreach( var localiza in localizaciones)
+                 {
+                     var usur = await context.Usuarios.SingleOrDefaultAsync(x => x.Id == localiza.UsuarioId);
+                     lista.Add(new LocalizacionUsuario
+                     {
+                         CoordenadaX= localiza.CoordenadaX,
+                         CoordenadaY= localiza.CoordenadaY,
+                         NickName= usur.NickName,
+                         Email = usur.Email,
+                         UrlAvatar = usur.Avatar,
+                         Fecha = localiza.Fecha
+                     });
+                 }
+                 return Ok(lista);
+                */
+                return localizaciones;
             }
             catch (Exception ex)
             {

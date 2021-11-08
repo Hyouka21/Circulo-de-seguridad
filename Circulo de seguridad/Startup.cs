@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Circulo_de_seguridad
@@ -41,7 +42,8 @@ namespace Circulo_de_seguridad
             });
 
             services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")); });
-  
+          //  services.AddControllers().AddJsonOptions(x =>
+          //   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(
                 opciones => opciones.TokenValidationParameters = new TokenValidationParameters

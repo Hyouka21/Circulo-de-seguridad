@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration;
+
 using Circulo_de_seguridad.Dtos;
 using Circulo_de_seguridad.Entidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 namespace Circulo_de_seguridad.Controllers
 {
     [ApiController]
-    [Route("grupo")]
+    [Route("notificacion")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificacionController:ControllerBase
     {
@@ -59,22 +60,33 @@ namespace Circulo_de_seguridad.Controllers
             }
 
         }
-        [HttpGet("obtener")]
-        public async Task<ActionResult<Notificacion>> obtener()//pedir grupo buscar por grupo y no devolver notificacion
+        [HttpPost("obtener")]
+        public async Task<ActionResult<List<NotificacionDto>>> obtener(IdentificadorDto identificadorDto)//pedir grupo buscar por grupo y no devolver notificacion
         {
             try
             {
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
-                var notificacion = await context.Notificaciones.SingleOrDefaultAsync(x => x.UsuarioId == usu.Id && x.Estado == false);
+                var grupo = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == identificadorDto.Identificador);
+                if (grupo == null)
+                {
+                    return BadRequest("El grupo no existe");
+                }
+                var subscripcion = await context.UsuariosGrupos
+                    .SingleOrDefaultAsync(x => x.UsuarioId == usu.Id && x.GrupoId == grupo.Id && x.Estado == true);
+                if (subscripcion == null)
+                {
+                    return BadRequest("Usted no pertenece a ese grupo");
+                }
+                var notificacion = await context.Notificaciones.Where(x => x.GrupoId==grupo.Id && x.FechaCreacion.AddDays(1)>DateTime.Now).ToListAsync();
                 if (notificacion == null)
                 {
                     return NoContent();
                 }
-                notificacion.Estado = true;
-                context.Update(notificacion);
+                var not = mapper.Map<List<NotificacionDto>>(notificacion);
+                notificacion.ForEach(x=>x.Estado=true);
                 await context.SaveChangesAsync();
-                return notificacion;
+                return not;
             }
             catch (Exception ex)
             {

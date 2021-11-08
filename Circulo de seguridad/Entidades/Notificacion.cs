@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Circulo_de_seguridad.Entidades
         public DateTime FechaCreacion { get; set; }
         public int GrupoId { get; set; }
         public int UsuarioId { get; set; }
-        public bool Estado { get; set; }
+        public bool Estado { get; set; }  
         public Grupo Grupo { get; set; }
         public Usuario Usuario { get; set; }
     }

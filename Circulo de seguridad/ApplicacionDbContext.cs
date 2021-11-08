@@ -1,4 +1,5 @@
-﻿using Circulo_de_seguridad.Entidades;
+﻿using Circulo_de_seguridad.Dtos;
+using Circulo_de_seguridad.Entidades;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace Circulo_de_seguridad
             modelBuilder.Entity<Usuario>().HasIndex(x => new { x.Email }).IsUnique();
             modelBuilder.Entity<Usuario>().HasIndex(x => new { x.NickName }).IsUnique();
             modelBuilder.Entity<Grupo>().HasIndex(x =>  x.Identificador ).IsUnique();
+            
         }
         public DbSet<Grupo> Grupos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -27,5 +29,6 @@ namespace Circulo_de_seguridad
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Localizacion> Localizaciones { get; set; }
         public DbSet<Evento> Eventos { get; set; }
+        public DbSet<LocalizacionUsuario> localizacionUsuarios { get; set; }
     }
 }
