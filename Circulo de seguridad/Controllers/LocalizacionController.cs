@@ -69,8 +69,8 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Usted no pertenece a ese grupo");
                 }
-                var localizaciones =  await context.localizacionUsuarios.FromSqlInterpolated($"EXECUTE obtenerLocalizacion  @idGrupo = {grupo.Id} ").ToListAsync();
-
+                var localizaciones =  await context.Localizaciones.FromSqlInterpolated($"SELECT L.* FROM (SELECT MAX(L.Id)AS Id FROM(SELECT U.* FROM Usuarios U  INNER Join UsuariosGrupos G on(U.Id = G.UsuarioId AND G.Estado = 1 AND G.GrupoId = {grupo.Id}))  U INNER join Localizaciones  L on U.Id = L.UsuarioId  GROUP BY U.Id) X INNER JOIN Localizaciones L ON X.Id = L.Id ").Include(x=>x.Usuario).ToListAsync();
+                
                 /* List<LocalizacionUsuario> lista = new List<LocalizacionUsuario>();
                  foreach( var localiza in localizaciones)
                  {
@@ -87,7 +87,7 @@ namespace Circulo_de_seguridad.Controllers
                  }
                  return Ok(lista);
                 */
-                return localizaciones;
+                return mapper.Map<List<LocalizacionUsuario>>(localizaciones);
             }
             catch (Exception ex)
             {

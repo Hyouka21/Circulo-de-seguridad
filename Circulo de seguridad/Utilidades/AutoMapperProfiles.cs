@@ -13,12 +13,22 @@ namespace Circulo_de_seguridad.Utilidades
         public AutoMapperProfiles()
         {
             CreateMap<Localizacion, CrearLocalizacion>().ReverseMap();
+            CreateMap<Localizacion, LocalizacionUsuario>()
+                .ForMember(d => d.NickName, o => o.MapFrom(s => s.Usuario.NickName))
+                .ForMember(d => d.UrlAvatar, o => o.MapFrom(s => s.Usuario.Avatar))
+                .ForMember(d => d.Email, o => o.MapFrom(s => s.Usuario.Email));
             CreateMap<Usuario, RegistrarUsuario>().ReverseMap();
             CreateMap<Grupo, CrearGrupo>().ReverseMap();
             CreateMap<NotificacionDto,Notificacion>().ReverseMap()
                 .ForMember(d=>d.NombreGrupo,o=>o.MapFrom(s=>s.Grupo.Nombre))
                 .ForMember(d => d.NombreUsuario, o => o.MapFrom(s => s.Usuario.NickName));
             CreateMap<CrearGrupo, Grupo>().ReverseMap();
+            CreateMap<UsuarioGrupo, GrupoDto>()
+                .ForMember(d => d.Descripcion, o => o.MapFrom(s => s.Grupo.Descripcion))
+                .ForMember(d => d.FechaCreacion, o => o.MapFrom(s => s.Grupo.FechaCreacion))
+                .ForMember(d => d.Identificador, o => o.MapFrom(s => s.Grupo.Identificador))
+                .ForMember(d => d.Nombre, o => o.MapFrom(s => s.Grupo.Nombre))
+                .ForMember(d => d.AvatarGrupo, o => o.MapFrom(s => s.Grupo.AvatarGrupo)); ;
             CreateMap<CrearEvento, Evento>();
             CreateMap<Evento, EventosDto>();
         }

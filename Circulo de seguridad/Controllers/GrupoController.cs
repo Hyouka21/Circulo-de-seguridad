@@ -38,17 +38,17 @@ namespace Circulo_de_seguridad.Controllers
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
                 var grupo = mapper.Map<Grupo>(crear);
-               
+
                 grupo.FechaCreacion = DateTime.Now;
-                grupo.AdminId = usu.Id;           
+                grupo.AdminId = usu.Id;
                 string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                        password: grupo.AdminId+grupo.Id+"",
+                        password: grupo.AdminId + grupo.Id + "",
                         salt: System.Text.Encoding.ASCII.GetBytes("SALYAZUCAR21"),
                         prf: KeyDerivationPrf.HMACSHA1,
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
                 grupo.Identificador = hashed;
-                 context.Add(grupo);
+                context.Add(grupo);
                 await context.SaveChangesAsync();
                 var grupoA = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == grupo.Identificador);
                 var grupoUsu = new UsuarioGrupo
@@ -58,16 +58,31 @@ namespace Circulo_de_seguridad.Controllers
                     Estado = true,
                     Fecha = DateTime.Now
                 };
-                 context.Add(grupoUsu);
+                context.Add(grupoUsu);
                 await context.SaveChangesAsync();
                 return NoContent();
-               
+
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-     
+        [HttpGet("obtener")]
+
+        public async Task<ActionResult<List<GrupoDto>>> obtener()
+        {
+            try
+            {
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
+                var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
+                var Grupos = await context.UsuariosGrupos.Include(x => x.Grupo).Where(x => x.UsuarioId == usu.Id && x.Estado == true).ToListAsync();
+                return mapper.Map<List<GrupoDto>>(Grupos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

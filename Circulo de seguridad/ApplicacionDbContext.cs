@@ -29,6 +29,5 @@ namespace Circulo_de_seguridad
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Localizacion> Localizaciones { get; set; }
         public DbSet<Evento> Eventos { get; set; }
-        public DbSet<LocalizacionUsuario> localizacionUsuarios { get; set; }
     }
 }

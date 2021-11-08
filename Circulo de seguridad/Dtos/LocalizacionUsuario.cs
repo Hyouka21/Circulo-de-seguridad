@@ -7,7 +7,6 @@ namespace Circulo_de_seguridad.Dtos
 {
     public class LocalizacionUsuario
     {
-        public int Id { get; set; }
         public float CoordenadaX { get; set; }
         public float CoordenadaY { get; set; }
         public string NickName { get; set; }
