@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Circulo_de_seguridad.Dtos;
 using Circulo_de_seguridad.Entidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +63,22 @@ namespace Circulo_de_seguridad.Controllers
            
              
             }
-            [HttpPost("login")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("obtenerUsuario")]
+        public async Task<ActionResult<UsuarioDto>> obtenerUsuario()
+        {
+            try
+            {
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
+                var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
+                return mapper.Map<UsuarioDto>(usu);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+                [HttpPost("login")]
             public async Task<ActionResult<TokenDto>> Login(LoginUsuario credencialesUsuario)
             {
             try

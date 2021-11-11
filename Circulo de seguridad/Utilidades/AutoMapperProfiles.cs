@@ -18,6 +18,7 @@ namespace Circulo_de_seguridad.Utilidades
                 .ForMember(d => d.UrlAvatar, o => o.MapFrom(s => s.Usuario.Avatar))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.Usuario.Email));
             CreateMap<Usuario, RegistrarUsuario>().ReverseMap();
+            CreateMap<UsuarioDto, Usuario>();
             CreateMap<Grupo, CrearGrupo>().ReverseMap();
             CreateMap<NotificacionDto,Notificacion>().ReverseMap()
                 .ForMember(d=>d.NombreGrupo,o=>o.MapFrom(s=>s.Grupo.Nombre))
