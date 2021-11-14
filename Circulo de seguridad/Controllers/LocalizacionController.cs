@@ -31,7 +31,7 @@ namespace Circulo_de_seguridad.Controllers
             this.context = context;
         }
         [HttpPost("miLocalizacion")]
-        public async Task<ActionResult> miLocalizacion(CrearLocalizacion crearLocalizacion)
+        public async Task<ActionResult<int>> miLocalizacion(CrearLocalizacion crearLocalizacion)
         {
             try
             {
@@ -41,15 +41,16 @@ namespace Circulo_de_seguridad.Controllers
                 local.UsuarioId = usu.Id;
                 local.Fecha = DateTime.Now;
                 await context.AddAsync(local);
-                await context.SaveChangesAsync();
-                return NoContent();
-            }catch(Exception ex)
+                
+                return await context.SaveChangesAsync();
+            }
+            catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("obtenerLocalizacion")]
+        [HttpPost("obtenerLocalizacion")]
 
           public async Task<ActionResult<List<LocalizacionUsuario>>> obtenerLocalizacion(IdentificadorDto identificadorDto)
         {

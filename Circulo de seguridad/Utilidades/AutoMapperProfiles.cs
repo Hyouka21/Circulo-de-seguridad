@@ -18,8 +18,9 @@ namespace Circulo_de_seguridad.Utilidades
                 .ForMember(d => d.UrlAvatar, o => o.MapFrom(s => s.Usuario.Avatar))
                 .ForMember(d => d.Email, o => o.MapFrom(s => s.Usuario.Email));
             CreateMap<Usuario, RegistrarUsuario>().ReverseMap();
-            CreateMap<UsuarioDto, Usuario>();
+            CreateMap<UsuarioDto, Usuario>().ReverseMap();
             CreateMap<Grupo, CrearGrupo>().ReverseMap();
+            CreateMap<GrupoDto, Grupo>().ReverseMap();
             CreateMap<NotificacionDto,Notificacion>().ReverseMap()
                 .ForMember(d=>d.NombreGrupo,o=>o.MapFrom(s=>s.Grupo.Nombre))
                 .ForMember(d => d.NombreUsuario, o => o.MapFrom(s => s.Usuario.NickName));
@@ -32,6 +33,11 @@ namespace Circulo_de_seguridad.Utilidades
                 .ForMember(d => d.AvatarGrupo, o => o.MapFrom(s => s.Grupo.AvatarGrupo)); ;
             CreateMap<CrearEvento, Evento>();
             CreateMap<Evento, EventosDto>();
+            CreateMap<UsuarioGrupo, SubscripcionDto>()
+                .ForMember(d => d.NickName, o => o.MapFrom(s => s.Usuario.NickName))
+                .ForMember(d => d.Estado, o => o.MapFrom(s => s.Estado))
+                .ForMember(d => d.Avatar, o => o.MapFrom(s => s.Usuario.Avatar))
+                .ForMember(d => d.Email, o => o.MapFrom(s => s.Usuario.Email));
         }
         
         

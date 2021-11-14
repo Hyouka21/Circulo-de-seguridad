@@ -71,7 +71,10 @@ namespace Circulo_de_seguridad.Controllers
             {
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
-                return mapper.Map<UsuarioDto>(usu);
+                
+                    var map =mapper.Map<UsuarioDto>(usu);
+                return map;
+
             }
             catch (Exception ex)
             {
@@ -79,7 +82,7 @@ namespace Circulo_de_seguridad.Controllers
             }
         }
                 [HttpPost("login")]
-            public async Task<ActionResult<TokenDto>> Login(LoginUsuario credencialesUsuario)
+            public async Task<ActionResult<String>> Login([FromForm]LoginUsuario credencialesUsuario)
             {
             try
             {
@@ -96,7 +99,7 @@ namespace Circulo_de_seguridad.Controllers
                     return BadRequest("Contraseña o Email Incorrectos");
                 }
                 var token = ConstruirToken(usuario);
-                return token;
+                return token.Token;
             }
             catch (Exception ex)
             {

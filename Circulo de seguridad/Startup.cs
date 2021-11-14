@@ -73,7 +73,7 @@ namespace Circulo_de_seguridad
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Circulo_de_seguridad v1"));
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseRouting();
