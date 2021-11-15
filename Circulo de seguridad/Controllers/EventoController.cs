@@ -30,7 +30,7 @@ namespace Circulo_de_seguridad.Controllers
             this.context = context;
         }
         [HttpPost("crear")]
-        public async Task<ActionResult> crearEvento(CrearEvento crear)
+        public async Task<ActionResult<int>> crearEvento(CrearEvento crear)
         {
             try
             {
@@ -63,8 +63,8 @@ namespace Circulo_de_seguridad.Controllers
                     Estado = false
                 };
                  context.Add(notificacion);
-                await context.SaveChangesAsync();
-                return NoContent();
+                
+                return await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
