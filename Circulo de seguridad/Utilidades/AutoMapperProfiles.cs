@@ -30,7 +30,8 @@ namespace Circulo_de_seguridad.Utilidades
                 .ForMember(d => d.FechaCreacion, o => o.MapFrom(s => s.Grupo.FechaCreacion))
                 .ForMember(d => d.Identificador, o => o.MapFrom(s => s.Grupo.Identificador))
                 .ForMember(d => d.Nombre, o => o.MapFrom(s => s.Grupo.Nombre))
-                .ForMember(d => d.AvatarGrupo, o => o.MapFrom(s => s.Grupo.AvatarGrupo)); ;
+                .ForMember(d => d.AvatarGrupo, o => o.MapFrom(s => s.Grupo.AvatarGrupo));
+
             CreateMap<CrearEvento, Evento>();
             CreateMap<Evento, EventosDto>();
             CreateMap<UsuarioGrupo, SubscripcionDto>()

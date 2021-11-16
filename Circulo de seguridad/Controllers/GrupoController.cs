@@ -102,8 +102,22 @@ namespace Circulo_de_seguridad.Controllers
             {
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
-                var Grupos = await context.UsuariosGrupos.Include(x => x.Grupo).Where(x => x.UsuarioId == usu.Id && x.Estado == true).ToListAsync();
-                return mapper.Map<List<GrupoDto>>(Grupos);
+                var GruposUsu = await context.UsuariosGrupos.Include(x => x.Grupo).Where(x => x.UsuarioId == usu.Id && x.Estado == true).ToListAsync();
+                var grupos = await context.Grupos.Where(x => x.AdminId == usu.Id).ToListAsync();
+                var grupitos= mapper.Map<List<GrupoDto>>(GruposUsu);
+                foreach(var gru in grupitos)
+                {
+                    gru.Estado = false;
+                    foreach (var grupotes in grupos)
+                    {
+                        if (gru.Identificador == grupotes.Identificador )
+                        {
+                            gru.Estado = true;
+                        }
+                       
+                    }
+                }
+                return grupitos;
             }
             catch (Exception ex)
             {

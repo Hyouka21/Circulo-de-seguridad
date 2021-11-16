@@ -12,5 +12,6 @@ namespace Circulo_de_seguridad.Dtos
         public string Descripcion { get; set; }
         public string AvatarGrupo { get; set; }
         public DateTime FechaCreacion { get; set; }
+        public bool Estado { get; set; }
     }
 }
