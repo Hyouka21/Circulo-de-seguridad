@@ -31,7 +31,7 @@ namespace Circulo_de_seguridad.Controllers
             this.context = context;
         }
         [HttpPost("emergencia")]
-        public async Task<ActionResult> emergencia(IdentificadorDto identificadorDto)
+        public async Task<ActionResult<int>> emergencia(IdentificadorDto identificadorDto)
         {
             try
             {
@@ -51,10 +51,11 @@ namespace Circulo_de_seguridad.Controllers
                     FechaCreacion = DateTime.Now,
                     Estado = false
                 };
-                await context.AddAsync(notificacion);
-                await context.SaveChangesAsync();
-                return NoContent();
-            }catch(Exception ex)
+                 context.Add(notificacion);
+                
+                return await context.SaveChangesAsync();
+            }
+            catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -78,7 +79,7 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Usted no pertenece a ese grupo");
                 }
-                var notificacion = await context.Notificaciones.Where(x => x.GrupoId==grupo.Id && x.FechaCreacion.AddDays(1)>DateTime.Now).ToListAsync();
+                var notificacion = await context.Notificaciones.Include(u=>u.Usuario).Where(x => x.GrupoId==grupo.Id && x.FechaCreacion.AddDays(1)>DateTime.Now).ToListAsync();
                 if (notificacion == null)
                 {
                     return NoContent();

@@ -30,7 +30,7 @@ namespace Circulo_de_seguridad.Controllers
             this.context = context;
         }
         [HttpPost("subscribirse")]
-        public async Task<ActionResult> subscribirse(IdentificadorDto subcripcion)
+        public async Task<ActionResult<int>> subscribirse(IdentificadorDto subcripcion)
         {
 
             try
@@ -55,8 +55,30 @@ namespace Circulo_de_seguridad.Controllers
                     return BadRequest("La subcripcion ya se realizo anteriormente");
                 }
                 context.Add(usuGru);
-                await context.SaveChangesAsync();
-                return NoContent();
+
+                return await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("desubscribirse")]
+        public async Task<ActionResult<int>> desubscribirse(IdentificadorDto subcripcion)
+        {
+
+            try
+            {
+                var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
+                var grupo = await context.Grupos.SingleOrDefaultAsync(x => x.Identificador == subcripcion.Identificador);
+                var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
+                
+                var respuesta = await context.UsuariosGrupos.SingleOrDefaultAsync(x => x.GrupoId == grupo.Id && x.UsuarioId == usu.Id);
+
+                context.Remove(respuesta);
+                return await context.SaveChangesAsync();
+
 
             }
             catch (Exception ex)

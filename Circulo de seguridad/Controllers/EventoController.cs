@@ -121,7 +121,7 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Usted no pertenece a ese grupo");
                 }
-                var evento = await context.Eventos.Where(x => x.GrupoId == grupo.Id && x.FechaFinalizacion>DateTime.Now).ToListAsync();
+                var evento = await context.Eventos.Include(u=>u.Usuario).Include(g=>g.Grupo).Where(x => x.GrupoId == grupo.Id && x.FechaFinalizacion>DateTime.Now).ToListAsync();
                 if (evento == null)
                 {
                     return NoContent();

@@ -124,16 +124,30 @@ namespace Circulo_de_seguridad.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("obtenerAdmin")]
+        [HttpPost("buscar")]
 
-        public async Task<ActionResult<List<GrupoDto>>> obtenerAdmin()
+        public async Task<ActionResult<List<GrupoDto>>> buscarGrupo(BuscarGrupoDto buscarGrupo)
         {
             try
             {
                 var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email).Value;
                 var usu = await context.Usuarios.SingleOrDefaultAsync(x => x.Email == email);
-                var Grupos = await context.Grupos.Where(x=>x.AdminId==usu.Id).ToListAsync();
-                return mapper.Map<List<GrupoDto>>(Grupos);
+                var GruposUsu = await context.UsuariosGrupos.Include(x => x.Grupo).Where(x => x.UsuarioId == usu.Id && x.Grupo.AdminId!=usu.Id).ToListAsync();
+                var Grupos = await context.Grupos.Where(x=>x.Nombre.Contains(buscarGrupo.Nombre) && x.AdminId!=usu.Id).ToListAsync();
+                var grupito =  mapper.Map<List<GrupoDto>>(Grupos);
+                foreach (var gru in grupito)
+                {
+                    gru.Estado = false;
+                    foreach (var grupotes in GruposUsu)
+                    {
+                        if (gru.Identificador == grupotes.Grupo.Identificador)
+                        {
+                            gru.Estado = true;
+                        }
+
+                    }
+                }
+                return grupito;
             }
             catch (Exception ex)
             {
