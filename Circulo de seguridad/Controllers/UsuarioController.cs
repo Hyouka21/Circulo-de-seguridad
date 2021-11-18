@@ -4,6 +4,8 @@ using Circulo_de_seguridad.Entidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -25,17 +28,19 @@ namespace Circulo_de_seguridad.Controllers
         private readonly IMapper mapper;
         private readonly IConfiguration configuration;
         private readonly ApplicationDbContext context;
+        private readonly IWebHostEnvironment environment;
 
-        public UsuarioController(IMapper mapper,IConfiguration configuration,ApplicationDbContext context)
+        public UsuarioController(IMapper mapper,IConfiguration configuration,ApplicationDbContext context, IWebHostEnvironment environment)
         {
             this.mapper = mapper;
             this.configuration = configuration;
             this.context = context;
+            this.environment = environment;
         }
 
          
             [HttpPost("registrar")]
-            public async Task<ActionResult<TokenDto>> Registrar(RegistrarUsuario registrarUsuario)
+            public async Task<ActionResult<int>> Registrar(RegistrarUsuario registrarUsuario)
             {
             try
             {
@@ -44,6 +49,29 @@ namespace Circulo_de_seguridad.Controllers
                 {
                     return BadRequest("Ya hay un usuario registrado con ese email");
                 }
+               
+                
+                if (registrarUsuario.Avatar != null)
+                {
+                    var stream1 = new MemoryStream(Convert.FromBase64String(registrarUsuario.Avatar));
+                    IFormFile ImagenInmo = new FormFile(stream1, 0, stream1.Length, "usuario", ".jpg");
+                    string wwwPath = environment.WebRootPath;
+                    string path = Path.Combine(wwwPath, "Uploads");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    Random r = new Random();
+                    //Path.GetFileName(u.AvatarFile.FileName);//este nombre se puede repetir
+                    string fileName = "usuario_" + r.Next(0, 100000) + Path.GetExtension(ImagenInmo.FileName);
+                    string pathCompleto = Path.Combine(path, fileName);
+
+                    registrarUsuario.Avatar = Path.Combine("Uploads", fileName);
+                    using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
+                    {
+                        ImagenInmo.CopyTo(stream);
+                    }
+                }
                 var usuario = mapper.Map<Usuario>(registrarUsuario);
                 string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                         password: usuario.Clave,
@@ -51,10 +79,11 @@ namespace Circulo_de_seguridad.Controllers
                         prf: KeyDerivationPrf.HMACSHA1,
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
+
                 usuario.Clave = hashed;
-                 context.Add(usuario);
-                await context.SaveChangesAsync();
-                return NoContent();
+                context.Add(usuario);
+                
+                return await context.SaveChangesAsync();
             }
             catch(Exception ex)
             {
